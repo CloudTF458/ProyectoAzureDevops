@@ -1,0 +1,11 @@
+#Utilizo un runtime oficial de Node como la imagen base. 
+#El resto de los comandos ya se vio en clase asi que no lo explico
+FROM node:14
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
+RUN npm config set strict-ssl false
+RUN npm install
+COPY . ./
+EXPOSE 3000
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

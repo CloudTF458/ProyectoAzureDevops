@@ -1,0 +1,17 @@
+# Esta primera parte sigue los mismos pasos que en el .dev
+FROM node:14 as builder
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package*.json ./
+RUN npm config set strict-ssl false
+RUN npm install
+COPY . ./
+RUN npm run build
+
+#Aqui, creamos una nueva etapa para obtener una imagen nueva, copiamos todo lo que se construyo en las lineas anteriores 
+#a la nueva carpeta de Nginx y lo corremos
+FROM nginx:stable-alpine as production
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=builder /app/dist .
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
